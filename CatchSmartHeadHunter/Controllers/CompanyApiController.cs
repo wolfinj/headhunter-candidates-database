@@ -39,7 +39,7 @@ public class ClientApiController : ControllerBase
         return Ok(_context.Companies
             .Include(c => c.OpenPositions)!
             .ThenInclude(op => op.Position)
-            .ThenInclude(p => p.RequiredSkills)
+            // .ThenInclude(p => p.RequiredSkills)
             .SingleOrDefault(c => c.Id == id));
     }
 

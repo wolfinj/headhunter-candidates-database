@@ -9,13 +9,13 @@ public static class HelperFunctions
         return context.Companies
             .Include(c => c.OpenPositions)
             .ThenInclude(p => p.Position)
-            .ThenInclude(p=>p.RequiredSkills)
+            // .ThenInclude(p=>p.RequiredSkills)
             .ToList();
     }
     public static ICollection<Position> GetPositions(HhDbContext context)
     {
         return context.Positions
-            .Include(p => p.RequiredSkills)
+            // .Include(p => p.RequiredSkills)
             .ToList();
     }
 }

@@ -37,7 +37,7 @@ public class PositionApiController : ControllerBase
     public IActionResult GetPosition(int id)
     {
         return Ok(_context.Positions
-            .Include(p => p.RequiredSkills)!
+            // .Include(p => p.RequiredSkills)!
             .SingleOrDefault(p => p.Id == id));
     }
 
@@ -54,7 +54,7 @@ public class PositionApiController : ControllerBase
         _context.CompanyPositions.RemoveRange(companyPositions);
         _context.SaveChanges();
 
-        _context.ReqSkills.RemoveRange(position.RequiredSkills);
+        // _context.ReqSkills.RemoveRange(position.RequiredSkills);
         _context.Positions.Remove(position);
         
         

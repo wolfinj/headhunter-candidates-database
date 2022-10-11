@@ -8,10 +8,10 @@ public class Position : Entity
     public string PositionName { get; set; }
 
     public string? Description { get; set; }
-    public ICollection<ReqSkill> RequiredSkills { get; set; }
-
-    public Position()
-    {
-        RequiredSkills = new List<ReqSkill>();
-    }
+    // public ICollection<ReqSkill> RequiredSkills { get; set; }
+    //
+    // public Position()
+    // {
+    //     RequiredSkills = new List<ReqSkill>();
+    // }
 }
