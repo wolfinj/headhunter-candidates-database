@@ -8,7 +8,6 @@ public class HhDbContext : DbContext
     public DbSet<Position> Positions { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<Skill> Skills { get; set; }
-    // public DbSet<ReqSkill> ReqSkills { get; set; }
     public DbSet<CandidatePosition> CandidatePositions { get; set; }
     public DbSet<CompanyPosition> CompanyPositions { get; set; }
 
@@ -33,6 +32,7 @@ public class HhDbContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite(_configuration.GetConnectionString("Headhunters"));
+        // options.UseSqlite(_configuration.GetConnectionString("Headhunters"));
+        options.UseSqlServer(_configuration.GetConnectionString("HeadhuntersSqlServer"));
     }
 }

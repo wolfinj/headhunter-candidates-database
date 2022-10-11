@@ -12,11 +12,11 @@ namespace CatchSmartHeadHunter.Migrations
                 name: "Candidates",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    FullName = table.Column<string>(type: "TEXT", nullable: false),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    About = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    About = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -27,11 +27,11 @@ namespace CatchSmartHeadHunter.Migrations
                 name: "Companies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -42,10 +42,10 @@ namespace CatchSmartHeadHunter.Migrations
                 name: "Positions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PositionName = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PositionName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -56,10 +56,10 @@ namespace CatchSmartHeadHunter.Migrations
                 name: "Skills",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    SkillName = table.Column<string>(type: "TEXT", nullable: false),
-                    CandidateId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SkillName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CandidateId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -75,10 +75,10 @@ namespace CatchSmartHeadHunter.Migrations
                 name: "CandidatePositions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PositionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CandidateId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PositionId = table.Column<int>(type: "int", nullable: false),
+                    CandidateId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -100,10 +100,10 @@ namespace CatchSmartHeadHunter.Migrations
                 name: "CompanyPositions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PositionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CompanyId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PositionId = table.Column<int>(type: "int", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -119,26 +119,6 @@ namespace CatchSmartHeadHunter.Migrations
                         principalTable: "Positions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ReqSkills",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    SkillName = table.Column<string>(type: "TEXT", nullable: false),
-                    Requirement = table.Column<string>(type: "TEXT", nullable: true),
-                    PositionId = table.Column<int>(type: "INTEGER", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReqSkills", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ReqSkills_Positions_PositionId",
-                        column: x => x.PositionId,
-                        principalTable: "Positions",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -162,11 +142,6 @@ namespace CatchSmartHeadHunter.Migrations
                 column: "PositionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReqSkills_PositionId",
-                table: "ReqSkills",
-                column: "PositionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Skills_CandidateId",
                 table: "Skills",
                 column: "CandidateId");
@@ -179,9 +154,6 @@ namespace CatchSmartHeadHunter.Migrations
 
             migrationBuilder.DropTable(
                 name: "CompanyPositions");
-
-            migrationBuilder.DropTable(
-                name: "ReqSkills");
 
             migrationBuilder.DropTable(
                 name: "Skills");
