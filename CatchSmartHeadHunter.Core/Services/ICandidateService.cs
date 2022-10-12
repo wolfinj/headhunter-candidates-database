@@ -9,4 +9,5 @@ public interface ICandidateService : IEntityService<Candidate>
     void AddPositionToAppliedPositions(Candidate candidate, Position position);
     void RemovePositionFromCandidateById(int candidateId,int positionID);
     void AddPositionToAppliedPositionsById(int candidateId, int positionID);
+    ICollection<Company> GetCompanies(int id);
 }

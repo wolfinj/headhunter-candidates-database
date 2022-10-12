@@ -104,4 +104,12 @@ public class CompanyApiController : ControllerBase
         
         return Ok(company);
     }
+    
+    [HttpGet, Route("company/{id:int}/positions")]
+    public IActionResult GetCompanyPositions(int id)
+    {
+        var company = _companyService.GetCompanyPositions(id);
+        return Ok(company);
+    }
+    
 }

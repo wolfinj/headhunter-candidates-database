@@ -9,4 +9,5 @@ public interface ICompanyService : IEntityService<Company>
     void AddPositionToOpenPositions(Company company, Position position);
     void RemovePositionFromCompanyById(int companyId,int positionID);
     void AddPositionToOpenPositionsById(int companyId, int positionID);
+    ICollection<Position> GetCompanyPositions(int id);
 }

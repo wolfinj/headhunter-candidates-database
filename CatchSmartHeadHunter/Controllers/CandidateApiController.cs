@@ -37,6 +37,7 @@ public class CandidateApiController : ControllerBase
     public IActionResult GetCandidate(int id)
     {
         var candidate = _candidateService.GetCompleteCandidateById(id);
+
         return Ok(candidate);
     }
 
@@ -46,6 +47,7 @@ public class CandidateApiController : ControllerBase
         try
         {
             var candidate = _candidateService.GetCompleteCandidateById(id);
+
             _candidateService.Delete(candidate);
         }
         catch (Exception e)
@@ -60,33 +62,42 @@ public class CandidateApiController : ControllerBase
     public IActionResult AddPositionToCandidateById(int candidateId, int positionId)
     {
         Candidate candidate;
-        
+
         try
         {
             candidate = _candidateService.GetCompleteCandidateById(candidateId);
-            _candidateService.AddPositionToAppliedPositionsById(candidateId,positionId);
+
+            _candidateService.AddPositionToAppliedPositionsById(candidateId, positionId);
         }
         catch (Exception e)
         {
             return Conflict(e.Message);
         }
+
         return Ok(candidate);
     }
 
     [HttpDelete, Route("candidate/{candidateId:int}/remove-position/{positionId:int}")]
-    public IActionResult RemovePositionFromCandidate(int candidateId, int positionId)
+    public IActionResult RemovePositionFromCandidate([FromRoute] int candidateId, [FromRoute] int positionId)
     {
         var candidate = _candidateService.GetCompleteCandidateById(candidateId);
-        
+
         try
         {
-            _candidateService.RemovePositionFromCandidateById(candidateId,positionId);
+            _candidateService.RemovePositionFromCandidateById(candidateId, positionId);
         }
         catch (Exception e)
         {
             return Conflict(e.Message);
         }
-        
+
         return Ok(candidate);
+    }
+
+    [HttpGet, Route("candidate/{candidateId:int}/companies-applied-to")]
+    public IActionResult CompaniesCandidateAppliedTo(int candidateId)
+    {
+        var companies = _candidateService.GetCompanies(candidateId);
+        return Ok(companies);
     }
 }

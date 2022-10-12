@@ -54,4 +54,16 @@ public class CompanyService : EntityService<Company>, ICompanyService
         company.OpenPositions.Add(companyPosition);
         _context.SaveChanges();
     }
+
+    public ICollection<Position> GetCompanyPositions(int id)
+    {
+        var positions = _context.Companies
+            .Include(c => c.OpenPositions)
+            .ThenInclude(op => op.Position)
+            .SingleOrDefault(c => c.Id == id)
+            .OpenPositions
+            .Select(op => op.Position);
+        
+        return positions.ToList();
+    }
 }
