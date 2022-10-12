@@ -1,3 +1,4 @@
+using CatchSmartHeadHunter.Data;
 using CatchSmartHeadHunter.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);

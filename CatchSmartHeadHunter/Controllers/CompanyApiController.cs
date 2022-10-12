@@ -1,4 +1,5 @@
 using CatchSmartHeadHunter.Core.Models;
+using CatchSmartHeadHunter.Data;
 using CatchSmartHeadHunter.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

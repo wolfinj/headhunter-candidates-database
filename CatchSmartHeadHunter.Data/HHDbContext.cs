@@ -1,7 +1,9 @@
 using CatchSmartHeadHunter.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
-namespace CatchSmartHeadHunter.Helpers;
+
+namespace CatchSmartHeadHunter.Data;
 
 public class HhDbContext : DbContext
 {
