@@ -24,7 +24,12 @@
 
     <ItemGroup>
       <Folder Include="Migrations" />
-      <Folder Include="_db" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CatchSmartHeadHunter.Core\CatchSmartHeadHunter.Core.csproj" />
+      <ProjectReference Include="..\CatchSmartHeadHunter.Data\CatchSmartHeadHunter.Data.csproj" />
+      <ProjectReference Include="..\CatchSmartHeadHunter.Services\CatchSmartHeadHunter.Services.csproj" />
     </ItemGroup>
 
 </Project>

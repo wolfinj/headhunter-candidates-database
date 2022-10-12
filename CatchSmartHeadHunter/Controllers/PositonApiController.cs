@@ -1,3 +1,4 @@
+using CatchSmartHeadHunter.Core.Models;
 using CatchSmartHeadHunter.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using static CatchSmartHeadHunter.Helpers.HelperFunctions;

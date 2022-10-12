@@ -1,3 +1,4 @@
+using CatchSmartHeadHunter.Core.Models;
 using CatchSmartHeadHunter.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,7 @@ public class ClientApiController : ControllerBase
     public IActionResult DeleteCompany(int id)
     {
         var company = _context.Companies.SingleOrDefault(c => c.Id == id);
+        _context.CompanyPositions.RemoveRange(company.OpenPositions);
         _context.Companies.Remove(company);
         _context.SaveChanges();
 

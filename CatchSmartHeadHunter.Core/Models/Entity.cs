@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CatchSmartHeadHunter;
+namespace CatchSmartHeadHunter.Core.Models;
 
 public class Entity
 {

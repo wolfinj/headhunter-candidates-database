@@ -1,4 +1,4 @@
-namespace CatchSmartHeadHunter;
+namespace CatchSmartHeadHunter.Core.Models;
 
 public class CompanyPosition : Entity
 {

@@ -1,3 +1,4 @@
+using CatchSmartHeadHunter.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CatchSmartHeadHunter.Helpers;
