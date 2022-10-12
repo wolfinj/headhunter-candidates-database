@@ -1,5 +1,7 @@
+using CatchSmartHeadHunter.Core.Models;
+using CatchSmartHeadHunter.Core.Services;
 using CatchSmartHeadHunter.Data;
-using CatchSmartHeadHunter.Helpers;
+using CatchSmartHeadHunter.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,13 @@ builder.Services.AddDbContext<HhDbContext>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IDbService, DbService>();
+builder.Services.AddScoped<IEntityService<Company>, EntityService<Company>>();
+builder.Services.AddScoped<IEntityService<Position>, EntityService<Position>>();
+builder.Services.AddScoped<IEntityService<Candidate>, EntityService<Candidate>>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<ICandidateService, CandidateService>();
 
 var app = builder.Build();
 

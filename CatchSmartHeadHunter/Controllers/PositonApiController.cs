@@ -1,8 +1,6 @@
 using CatchSmartHeadHunter.Core.Models;
-using CatchSmartHeadHunter.Data;
-using CatchSmartHeadHunter.Helpers;
+using CatchSmartHeadHunter.Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using static CatchSmartHeadHunter.Helpers.HelperFunctions;
 
 namespace CatchSmartHeadHunter.Controllers;
 
@@ -10,17 +8,17 @@ namespace CatchSmartHeadHunter.Controllers;
 [Route("api")]
 public class PositionApiController : ControllerBase
 {
-    private readonly HhDbContext _context;
+    private readonly IEntityService<Position> _positionService;
 
-    public PositionApiController(HhDbContext context)
+    public PositionApiController(IEntityService<Position> positionService)
     {
-        _context = context;
+        _positionService = positionService;
     }
 
     [HttpGet, Route("positions")]
     public IActionResult GetAllPositions()
     {
-        var positions = GetPositions(_context);
+        var positions = _positionService.GetAll();
 
         return Ok(positions);
     }
@@ -28,8 +26,7 @@ public class PositionApiController : ControllerBase
     [HttpPost, Route("position")]
     public IActionResult PostPosition(Position position)
     {
-        _context.Add(position);
-        _context.SaveChanges();
+        _positionService.Create(position);
 
         return Created("Position added.", position);
     }
@@ -37,21 +34,31 @@ public class PositionApiController : ControllerBase
     [HttpGet, Route("position/{id:int}")]
     public IActionResult GetPosition(int id)
     {
-        return Ok(_context.Positions
-            .SingleOrDefault(p => p.Id == id));
+        Position position;
+        try
+        {
+            position = _positionService.GetById(id);
+        }
+        catch (Exception e)
+        {
+            return Conflict(e.Message);
+        }
+
+        return Ok(position);
     }
 
     [HttpDelete, Route("position/{id:int}")]
     public IActionResult DeletePosition(int id)
     {
-        var position = _context.Positions.SingleOrDefault(c => c.Id == id);
-        var companyPositions = _context.CompanyPositions.Where(cp => cp.Position.Id == id);
-        _context.CompanyPositions.RemoveRange(companyPositions);
-
-        _context.Positions.Remove(position);
-
-
-        _context.SaveChanges();
+        try
+        {
+            var position = _positionService.GetById(id);
+            _positionService.Delete(position);
+        }
+        catch (Exception e)
+        {
+            return Conflict(e.Message);
+        }
 
         return Ok($"Position with id:{id} deleted.");
     }

@@ -2,7 +2,6 @@ using CatchSmartHeadHunter.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-
 namespace CatchSmartHeadHunter.Data;
 
 public class HhDbContext : DbContext
@@ -23,19 +22,10 @@ public class HhDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // modelBuilder.Entity<Company>().HasMany(c=>c.OpenPositions).WithOne();
-        // modelBuilder.Entity<Candidate>().HasMany(c=>c.AppliedPositions).WithOne();
-        // modelBuilder.Entity<Candidate>().HasMany(c=>c.Skills);
-        // modelBuilder.Entity<Position>().HasMany(c=>c.RequiredSkills);
-        // modelBuilder.Entity<CompanyPosition>().HasOne(c => c.Company);
-        // modelBuilder.Entity<CompanyPosition>().HasOne(c => c.Position);
-        // modelBuilder.Entity<CandidatePosition>().HasOne(c => c.Position);
-        // modelBuilder.Entity<CandidatePosition>().HasOne(c => c.Candidate);
     }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        // options.UseSqlite(_configuration.GetConnectionString("Headhunters"));
         options.UseSqlServer(_configuration.GetConnectionString("HeadhuntersSqlServer"));
     }
 }

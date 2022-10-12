@@ -1,27 +1,24 @@
 using CatchSmartHeadHunter.Core.Models;
-using CatchSmartHeadHunter.Data;
-using CatchSmartHeadHunter.Helpers;
+using CatchSmartHeadHunter.Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using static CatchSmartHeadHunter.Helpers.HelperFunctions;
 
 namespace CatchSmartHeadHunter.Controllers;
 
 [ApiController]
 [Route("api")]
-public class ClientApiController : ControllerBase
+public class CompanyApiController : ControllerBase
 {
-    private readonly HhDbContext _context;
+    private readonly ICompanyService _companyService;
 
-    public ClientApiController(HhDbContext context)
+    public CompanyApiController(ICompanyService companyService)
     {
-        _context = context;
+        _companyService = companyService;
     }
 
     [HttpGet, Route("companies")]
     public IActionResult GetAllCompanies()
     {
-        var companies = GetCompanies(_context);
+        var companies = _companyService.GetCompleteCompanies();
 
         return Ok(companies);
     }
@@ -29,8 +26,7 @@ public class ClientApiController : ControllerBase
     [HttpPost, Route("company")]
     public IActionResult PostCompany(Company company)
     {
-        _context.Add(company);
-        _context.SaveChanges();
+        _companyService.Create(company);
 
         return Created("Company added.", company);
     }
@@ -38,19 +34,22 @@ public class ClientApiController : ControllerBase
     [HttpGet, Route("company/{id:int}")]
     public IActionResult GetCompany(int id)
     {
-        return Ok(_context.Companies
-            .Include(c => c.OpenPositions)!
-            .ThenInclude(op => op.Position)
-            .SingleOrDefault(c => c.Id == id));
+        var company = _companyService.GetCompleteCompanyById(id);
+        return Ok(company);
     }
 
     [HttpDelete, Route("company/{id:int}")]
     public IActionResult DeleteCompany(int id)
     {
-        var company = _context.Companies.SingleOrDefault(c => c.Id == id);
-        _context.CompanyPositions.RemoveRange(company.OpenPositions);
-        _context.Companies.Remove(company);
-        _context.SaveChanges();
+        try
+        {
+            var company = _companyService.GetCompleteCompanyById(id);
+            _companyService.Delete(company);
+        }
+        catch (Exception e)
+        {
+            return Conflict(e.Message);
+        }
 
         return Ok($"Company with id:{id} deleted.");
     }
@@ -58,24 +57,51 @@ public class ClientApiController : ControllerBase
     [HttpPut, Route("company/{id:int}/add-position")]
     public IActionResult AddPositionToCompany(int id, Position position)
     {
-        var company = _context.Companies.SingleOrDefault(c => c.Id == id);
-        var companyPosition = new CompanyPosition(position);
-        _context.Add(position);
-        company.OpenPositions.Add(companyPosition);
-        _context.SaveChanges();
-
+        Company company;
+        
+        try
+        {
+            company = _companyService.GetCompleteCompanyById(id);
+            _companyService.AddPositionToOpenPositions(company,position);
+        }
+        catch (Exception e)
+        {
+            return Conflict(e.Message);
+        }
+        return Ok(company);
+    }
+    
+    [HttpPut, Route("company/{companyId:int}/add-position-id/{positionId:int}")]
+    public IActionResult AddPositionToCompanyById(int companyId, int positionId)
+    {
+        Company company;
+        
+        try
+        {
+            company = _companyService.GetCompleteCompanyById(companyId);
+            _companyService.AddPositionToOpenPositionsById(companyId,positionId);
+        }
+        catch (Exception e)
+        {
+            return Conflict(e.Message);
+        }
         return Ok(company);
     }
 
-    [HttpDelete, Route("company/{companyId:int}/remove-position/{posId:int}")]
-    public IActionResult RemovePositionFromCompany(int companyId, int posId)
+    [HttpDelete, Route("company/{companyId:int}/remove-position/{positionId:int}")]
+    public IActionResult RemovePositionFromCompany(int companyId, int positionId)
     {
-        var companyPosition = _context.CompanyPositions.SingleOrDefault(cp => cp.Position.Id == posId);
-        var company = _context.Companies.SingleOrDefault(c => c.Id == companyId);
-
-        company.OpenPositions.Remove(companyPosition);
-        _context.SaveChanges();
-
+        var company = _companyService.GetCompleteCompanyById(companyId);
+        // var companyPosition = _context.CompanyPositions.SingleOrDefault(cp => cp.Position.Id == positionId);
+        try
+        {
+            _companyService.RemovePositionFromCompanyById(companyId,positionId);
+        }
+        catch (Exception e)
+        {
+            return Conflict(e.Message);
+        }
+        
         return Ok(company);
     }
 }
