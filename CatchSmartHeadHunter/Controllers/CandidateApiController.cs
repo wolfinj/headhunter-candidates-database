@@ -28,7 +28,7 @@ public class CandidateApiController : ControllerBase
     }
 
     [HttpPost, Route("candidate")]
-    public IActionResult PostCandidate(CandidateRequest candidateRequest)
+    public IActionResult PostCandidate([FromBody] CandidateRequest candidateRequest)
     {
         if (!IsCandidateRequestDataValid(candidateRequest))
         {
@@ -50,7 +50,7 @@ public class CandidateApiController : ControllerBase
     }
 
     [HttpGet, Route("candidate/{id:int}")]
-    public IActionResult GetCandidate(int id)
+    public IActionResult GetCandidate([FromRoute] int id)
     {
         Candidate candidate;
 
@@ -67,7 +67,7 @@ public class CandidateApiController : ControllerBase
     }
 
     [HttpDelete, Route("candidate/{id:int}")]
-    public IActionResult DeleteCandidate(int id)
+    public IActionResult DeleteCandidate([FromRoute] int id)
     {
         try
         {
@@ -88,7 +88,7 @@ public class CandidateApiController : ControllerBase
     }
 
     [HttpPut, Route("candidate/{candidateId:int}/add-position-id/{positionId:int}")]
-    public IActionResult AddPositionToCandidateById(int candidateId, int positionId)
+    public IActionResult AddPositionToCandidateById([FromRoute] int candidateId, [FromRoute] int positionId)
     {
         Candidate candidate;
 
@@ -141,7 +141,7 @@ public class CandidateApiController : ControllerBase
     }
 
     [HttpGet, Route("candidate/{candidateId:int}/companies-applied-to")]
-    public IActionResult CompaniesCandidateAppliedTo(int candidateId)
+    public IActionResult CompaniesCandidateAppliedTo([FromRoute] int candidateId)
     {
         ICollection<Company> companies;
 

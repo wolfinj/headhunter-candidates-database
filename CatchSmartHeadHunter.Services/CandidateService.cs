@@ -15,10 +15,11 @@ public class CandidateService : EntityService<Candidate>, ICandidateService
     public Candidate GetCompleteCandidateById(int id)
     {
         var candidate = Context.Candidates
-                                    .Include(c => c.AppliedPositions)
-                                    .ThenInclude(op => op.Position)
-                                    .Include(c => c.Skills)
-                                    .SingleOrDefault(c => c.Id == id);
+            .Include(c => c.AppliedPositions)
+            .ThenInclude(op => op.Position)
+            .Include(c => c.Skills)
+            .SingleOrDefault(c => c.Id == id);
+        
         if (candidate == null)
         {
             throw new CandidateNotFoundException(id);
@@ -47,12 +48,12 @@ public class CandidateService : EntityService<Candidate>, ICandidateService
     public void RemovePositionFromCandidateById(int candidateId, int positionId)
     {
         var candidate = Context.Candidates.SingleOrDefault(c => c.Id == candidateId);
-        
+
         if (candidate == null)
         {
             throw new CandidateNotFoundException(candidateId);
         }
-        
+
         var candidatePosition = (candidate.AppliedPositions ?? throw new ApliedPositionNotAvaibleException(positionId))
             .SingleOrDefault(cp => cp.Position.Id == positionId);
 
@@ -69,19 +70,19 @@ public class CandidateService : EntityService<Candidate>, ICandidateService
     public void AddPositionToAppliedPositionsById(int candidateId, int positionId)
     {
         var candidate = Context.Candidates.SingleOrDefault(c => c.Id == candidateId);
-        
+
         if (candidate == null)
         {
             throw new CandidateNotFoundException(candidateId);
         }
-        
+
         var position = Context.Positions.SingleOrDefault(p => p.Id == positionId);
-        
+
         if (position == null)
         {
             throw new PositionNotFoundException(positionId);
         }
-        
+
         var candidatePosition = new CandidatePosition(position);
 
         candidate.AppliedPositions!.Add(candidatePosition);
@@ -91,16 +92,16 @@ public class CandidateService : EntityService<Candidate>, ICandidateService
     public ICollection<Company> GetCompanies(int id)
     {
         var candidate = GetCompleteCandidateById(id);
-        
-        var positionIds=candidate.AppliedPositions.Select(ap=>ap.Position.Id);
-        
+
+        var positionIds = candidate.AppliedPositions.Select(ap => ap.Position.Id);
+
         var companiesPositions = Context.CompanyPositions
             .Where(c => positionIds.Contains(c.Position.Id))
-            .Select(cp=>cp.Id);
-        
+            .Select(cp => cp.Id);
+
         var companies = Context.Companies
-            .Include(c=>c.OpenPositions)
-            .ThenInclude(cp=>cp.Position)
+            .Include(c => c.OpenPositions)
+            .ThenInclude(cp => cp.Position)
             .Where(c => c.OpenPositions.Any(op => companiesPositions.Contains(op.Id)));
 
         return companies.ToList();

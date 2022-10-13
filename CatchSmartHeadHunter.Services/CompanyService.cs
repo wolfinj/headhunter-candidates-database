@@ -78,7 +78,6 @@ public class CompanyService : EntityService<Company>, ICompanyService
 
     public ICollection<Position> GetCompanyPositions(int id)
     {
-        
         var positions = GetCompleteCompanyById(id)
             .OpenPositions!
             .Select(op => op.Position);

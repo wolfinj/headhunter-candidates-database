@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<HhDbContext>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -22,7 +23,7 @@ builder.Services.AddScoped<IEntityService<Position>, EntityService<Position>>();
 builder.Services.AddScoped<IEntityService<Candidate>, EntityService<Candidate>>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ICandidateService, CandidateService>();
-builder.Services.AddSingleton<IMapper>(RequestConverterExtensions.CreateMapper());
+builder.Services.AddSingleton(RequestConverterExtensions.CreateMapper());
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

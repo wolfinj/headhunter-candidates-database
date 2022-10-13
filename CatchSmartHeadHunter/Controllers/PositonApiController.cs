@@ -28,7 +28,7 @@ public class PositionApiController : ControllerBase
     }
 
     [HttpPost, Route("position")]
-    public IActionResult PostPosition(PositionRequest positionRequest)
+    public IActionResult PostPosition([FromBody] PositionRequest positionRequest)
     {
         if (!IsPositionRequestDataValid(positionRequest))
         {
@@ -51,11 +51,12 @@ public class PositionApiController : ControllerBase
         }
 
         var uri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}{Request.Path}/{position.Id}";
+        
         return Created(uri, position.ToPositionRequest());
     }
 
     [HttpGet, Route("position/{id:int}")]
-    public IActionResult GetPosition(int id)
+    public IActionResult GetPosition([FromRoute] int id)
     {
         try
         {
@@ -71,7 +72,7 @@ public class PositionApiController : ControllerBase
     }
 
     [HttpDelete, Route("position/{id:int}")]
-    public IActionResult DeletePosition(int id)
+    public IActionResult DeletePosition([FromRoute] int id)
     {
         try
         {

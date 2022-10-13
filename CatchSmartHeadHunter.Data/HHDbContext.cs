@@ -20,10 +20,6 @@ public class HhDbContext : DbContext
         _configuration = configuration;
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-    }
-
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         options.UseSqlServer(_configuration.GetConnectionString("HeadhuntersSqlServer"));

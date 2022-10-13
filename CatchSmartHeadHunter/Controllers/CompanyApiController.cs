@@ -29,19 +29,19 @@ public class CompanyApiController : ControllerBase
         return Ok(companies.ToCompanyRequestList());
     }
 
-    [HttpPost, Route("companyRequest")]
-    public IActionResult PostCompany(CompanyRequest companyRequest)
+    [HttpPost, Route("company")]
+    public IActionResult PostCompany([FromBody] CompanyRequest companyRequest)
     {
         if (!IsCompanyRequestDataValid(companyRequest))
         {
             return Conflict("Company name and e-mail can't be empty or null.");
         }
 
-        if (DoesCompanyAlreadyExist(_companyService.GetCompleteCompanies(),companyRequest))
+        if (DoesCompanyAlreadyExist(_companyService.GetCompleteCompanies(), companyRequest))
         {
             return Conflict("Company already exists");
         }
-        
+
         var newCompany = companyRequest.ToCompany();
         _companyService.Create(newCompany);
 
@@ -49,10 +49,11 @@ public class CompanyApiController : ControllerBase
         return Created(uri, newCompany.ToCompanyRequest());
     }
 
-    [HttpGet, Route("companyRequest/{id:int}")]
-    public IActionResult GetCompany(int id)
+    [HttpGet, Route("company/{id:int}")]
+    public IActionResult GetCompany([FromRoute] int id)
     {
         Company company;
+
         try
         {
             company = _companyService.GetCompleteCompanyById(id);
@@ -65,8 +66,8 @@ public class CompanyApiController : ControllerBase
         return Ok(company.ToCompanyRequest());
     }
 
-    [HttpDelete, Route("companyRequest/{id:int}")]
-    public IActionResult DeleteCompany(int id)
+    [HttpDelete, Route("company/{id:int}")]
+    public IActionResult DeleteCompany([FromRoute] int id)
     {
         try
         {
@@ -85,8 +86,8 @@ public class CompanyApiController : ControllerBase
         return Ok($"Company with id:{id} deleted.");
     }
 
-    [HttpPut, Route("companyRequest/{id:int}/add-positionRequest")]
-    public IActionResult AddPositionToCompany(int id, PositionRequest positionRequest)
+    [HttpPut, Route("company/{id:int}/add-position")]
+    public IActionResult AddPositionToCompany([FromRoute] int id, [FromBody] PositionRequest positionRequest)
     {
         if (!IsPositionRequestDataValid(positionRequest))
         {
@@ -97,7 +98,7 @@ public class CompanyApiController : ControllerBase
         {
             return Conflict("Position already exists.");
         }
-        
+
         Company company;
 
         try
@@ -117,8 +118,8 @@ public class CompanyApiController : ControllerBase
         return Ok(company);
     }
 
-    [HttpPut, Route("companyRequest/{companyId:int}/add-positionRequest-id/{positionId:int}")]
-    public IActionResult AddPositionToCompanyById(int companyId, int positionId)
+    [HttpPut, Route("company/{companyId:int}/add-position-id/{positionId:int}")]
+    public IActionResult AddPositionToCompanyById([FromRoute] int companyId, [FromRoute] int positionId)
     {
         Company company;
 
@@ -143,8 +144,8 @@ public class CompanyApiController : ControllerBase
         return Ok(company);
     }
 
-    [HttpDelete, Route("companyRequest/{companyId:int}/remove-positionRequest/{positionId:int}")]
-    public IActionResult RemovePositionFromCompany(int companyId, int positionId)
+    [HttpDelete, Route("company/{companyId:int}/remove-position/{positionId:int}")]
+    public IActionResult RemovePositionFromCompany([FromRoute] int companyId, [FromRoute] int positionId)
     {
         Company company;
         try
@@ -168,10 +169,11 @@ public class CompanyApiController : ControllerBase
         return Ok(company);
     }
 
-    [HttpGet, Route("companyRequest/{id:int}/positions")]
-    public IActionResult GetCompanyPositions(int id)
+    [HttpGet, Route("company/{id:int}/positions")]
+    public IActionResult GetCompanyPositions([FromRoute] int id)
     {
         ICollection<Position> companyOpenPositions;
+
         try
         {
             companyOpenPositions = _companyService.GetCompanyPositions(id);
@@ -180,7 +182,7 @@ public class CompanyApiController : ControllerBase
         {
             return NotFound(e.Message);
         }
-        
+
         return Ok(companyOpenPositions);
     }
 }

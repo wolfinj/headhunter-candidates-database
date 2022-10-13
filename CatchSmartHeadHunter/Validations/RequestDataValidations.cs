@@ -41,9 +41,11 @@ public static class RequestDataValidations
 
     private static bool IsCandidateSame(Candidate currentCandidate, CandidateRequest expectedCandidateRequest)
     {
-        return string.Equals(currentCandidate.FullName.Trim(), expectedCandidateRequest.FullName.Trim(),
+        return string.Equals(currentCandidate.FullName.Trim(),
+                   expectedCandidateRequest.FullName.Trim(),
                    StringComparison.OrdinalIgnoreCase) &&
-               string.Equals(currentCandidate.Email.Trim(), expectedCandidateRequest.Email.Trim(),
+               string.Equals(currentCandidate.Email.Trim(),
+                   expectedCandidateRequest.Email.Trim(),
                    StringComparison.OrdinalIgnoreCase);
     }
 
@@ -72,9 +74,11 @@ public static class RequestDataValidations
 
     private static bool IsCompanySame(Company currentCompany, CompanyRequest expectedCompanyRequest)
     {
-        return string.Equals(currentCompany.Name.Trim(), expectedCompanyRequest.Name.Trim(),
+        return string.Equals(currentCompany.Name.Trim(), 
+                   expectedCompanyRequest.Name.Trim(),
                    StringComparison.OrdinalIgnoreCase) &&
-               string.Equals(currentCompany.Email.Trim(), expectedCompanyRequest.Email.Trim(),
+               string.Equals(currentCompany.Email.Trim(), 
+                   expectedCompanyRequest.Email.Trim(),
                    StringComparison.OrdinalIgnoreCase);
     }
 
