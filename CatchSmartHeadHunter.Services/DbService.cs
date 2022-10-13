@@ -7,44 +7,44 @@ namespace CatchSmartHeadHunter.Services;
 
 public class DbService : IDbService
 {
-    protected HhDbContext _context;
+    protected HhDbContext Context;
 
     public DbService(HhDbContext context)
     {
-        _context = context;
+        Context = context;
     }
 
     public void Create<T>(T entity) where T : Entity
     {
-        _context.Set<T>().Add(entity);
-        _context.SaveChanges();
+        Context.Set<T>().Add(entity);
+        Context.SaveChanges();
     }
 
     public void Delete<T>(T entity) where T : Entity
     {
-        _context.Set<T>().Remove(entity);
-        _context.SaveChanges();
+        Context.Set<T>().Remove(entity);
+        Context.SaveChanges();
     }
 
     public void Update<T>(T entity) where T : Entity
     {
-        _context.Entry(entity).State = EntityState.Modified;
-        _context.SaveChanges();
+        Context.Entry(entity).State = EntityState.Modified;
+        Context.SaveChanges();
     }
 
     public T? GetById<T>(int id) where T : Entity
     {
-        var result = _context.Set<T>().SingleOrDefault(e => e.Id == id);
+        var result = Context.Set<T>().SingleOrDefault(e => e.Id == id);
         return result;
     }
 
     public ICollection<T> GetAll<T>() where T : Entity
     {
-        return _context.Set<T>().ToList();
+        return Context.Set<T>().ToList();
     }
 
     public IQueryable<T> Query<T>() where T : Entity
     {
-        return _context.Set<T>().AsQueryable();
+        return Context.Set<T>().AsQueryable();
     }
 }

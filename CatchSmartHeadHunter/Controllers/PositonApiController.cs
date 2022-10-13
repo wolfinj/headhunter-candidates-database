@@ -1,5 +1,8 @@
+using CatchSmartHeadHunter.Core.Exceptions;
 using CatchSmartHeadHunter.Core.Models;
 using CatchSmartHeadHunter.Core.Services;
+using CatchSmartHeadHunter.Helpers;
+using CatchSmartHeadHunter.RequestModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CatchSmartHeadHunter.Controllers;
@@ -20,31 +23,41 @@ public class PositionApiController : ControllerBase
     {
         var positions = _positionService.GetAll();
 
-        return Ok(positions);
+        return Ok(positions.ToPositionRequestList());
     }
 
     [HttpPost, Route("position")]
-    public IActionResult PostPosition(Position position)
+    public IActionResult PostPosition(PositionRequest positionRequest)
     {
-        _positionService.Create(position);
+        // ToDo Validate request data
 
-        return Created("Position added.", position);
+        var position = positionRequest.ToPosition();
+        try
+        {
+            _positionService.Create(position);
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
+
+        return Created("Position added.", position.ToPositionRequest());
     }
 
     [HttpGet, Route("position/{id:int}")]
     public IActionResult GetPosition(int id)
     {
-        Position position;
         try
         {
-            position = _positionService.GetById(id);
+            var position = _positionService.GetById(id);
+            return position == null ? 
+                NotFound($"Position with id:\"{id}\" not found.") : 
+                Ok(position.ToPositionRequest());
         }
         catch (Exception e)
         {
-            return Conflict(e.Message);
+            return Problem(e.Message);
         }
-
-        return Ok(position);
     }
 
     [HttpDelete, Route("position/{id:int}")]
@@ -52,12 +65,17 @@ public class PositionApiController : ControllerBase
     {
         try
         {
-            var position = _positionService.GetById(id);
+            var position = _positionService.GetById(id) ?? throw new PositionNotFoundException(id);
+
             _positionService.Delete(position);
+        }
+        catch (PositionNotFoundException e)
+        {
+            return NotFound(e.Message);
         }
         catch (Exception e)
         {
-            return Conflict(e.Message);
+            return Problem(e.Message);
         }
 
         return Ok($"Position with id:{id} deleted.");

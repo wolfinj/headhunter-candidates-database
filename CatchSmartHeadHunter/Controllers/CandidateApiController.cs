@@ -1,8 +1,9 @@
+using CatchSmartHeadHunter.Core.Exceptions;
 using CatchSmartHeadHunter.Core.Models;
 using CatchSmartHeadHunter.Core.Services;
-using CatchSmartHeadHunter.Data;
+using CatchSmartHeadHunter.Helpers;
+using CatchSmartHeadHunter.RequestModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CatchSmartHeadHunter.Controllers;
 
@@ -22,23 +23,37 @@ public class CandidateApiController : ControllerBase
     {
         var candidates = _candidateService.GetCompleteCandidates();
 
-        return Ok(candidates);
+        return Ok(candidates.ToCandidateRequestList());
     }
 
     [HttpPost, Route("candidate")]
-    public IActionResult PostCandidate(Candidate candidate)
+    public IActionResult PostCandidate(CandidateRequest candidateRequest)
     {
+        // ToDo validate request data
+        var candidate = candidateRequest.ToCandidate();
+        
         _candidateService.Create(candidate);
-
-        return Created("Candidate added.", candidate);
+        
+        var uri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}{Request.Path}/{candidate.Id}";
+        
+        return Created(uri, candidate.ToCandidateRequest());
     }
 
     [HttpGet, Route("candidate/{id:int}")]
     public IActionResult GetCandidate(int id)
     {
-        var candidate = _candidateService.GetCompleteCandidateById(id);
+        Candidate candidate;
 
-        return Ok(candidate);
+        try
+        {
+            candidate = _candidateService.GetCompleteCandidateById(id);
+        }
+        catch (CandidateNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+
+        return Ok(candidate.ToCandidateRequest());
     }
 
     [HttpDelete, Route("candidate/{id:int}")]
@@ -50,9 +65,13 @@ public class CandidateApiController : ControllerBase
 
             _candidateService.Delete(candidate);
         }
+        catch (CandidateNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
         catch (Exception e)
         {
-            return Conflict(e.Message);
+            return Problem(e.Message);
         }
 
         return Ok($"Candidate with id:{id} deleted.");
@@ -69,35 +88,66 @@ public class CandidateApiController : ControllerBase
 
             _candidateService.AddPositionToAppliedPositionsById(candidateId, positionId);
         }
+        catch (CandidateNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (PositionNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
         catch (Exception e)
         {
-            return Conflict(e.Message);
+            return Problem(e.Message);
         }
 
-        return Ok(candidate);
+        return Ok(candidate.ToCandidateRequest());
     }
 
     [HttpDelete, Route("candidate/{candidateId:int}/remove-position/{positionId:int}")]
     public IActionResult RemovePositionFromCandidate([FromRoute] int candidateId, [FromRoute] int positionId)
     {
-        var candidate = _candidateService.GetCompleteCandidateById(candidateId);
-
+        Candidate candidate;
         try
         {
+            candidate = _candidateService.GetCompleteCandidateById(candidateId);
+
             _candidateService.RemovePositionFromCandidateById(candidateId, positionId);
+        }
+        catch (CandidateNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (ApliedPositionNotAvaibleException e)
+        {
+            return NotFound(e.Message);
         }
         catch (Exception e)
         {
-            return Conflict(e.Message);
+            return Problem(e.Message);
         }
 
-        return Ok(candidate);
+        return Ok(candidate.ToCandidateRequest());
     }
 
     [HttpGet, Route("candidate/{candidateId:int}/companies-applied-to")]
     public IActionResult CompaniesCandidateAppliedTo(int candidateId)
     {
-        var companies = _candidateService.GetCompanies(candidateId);
-        return Ok(companies);
+        ICollection<Company> companies;
+
+        try
+        {
+            companies = _candidateService.GetCompanies(candidateId);
+        }
+        catch (CandidateNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
+
+        return Ok(companies.ToCompanyRequestList());
     }
 }

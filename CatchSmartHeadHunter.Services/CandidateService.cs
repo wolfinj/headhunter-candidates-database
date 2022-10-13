@@ -1,3 +1,4 @@
+using CatchSmartHeadHunter.Core.Exceptions;
 using CatchSmartHeadHunter.Core.Models;
 using CatchSmartHeadHunter.Core.Services;
 using CatchSmartHeadHunter.Data;
@@ -13,16 +14,22 @@ public class CandidateService : EntityService<Candidate>, ICandidateService
 
     public Candidate GetCompleteCandidateById(int id)
     {
-        return _context.Candidates
-            .Include(c => c.AppliedPositions)
-            .ThenInclude(op => op.Position)
-            .Include(c => c.Skills)
-            .SingleOrDefault(c => c.Id == id);
+        var candidate = Context.Candidates
+                                    .Include(c => c.AppliedPositions)
+                                    .ThenInclude(op => op.Position)
+                                    .Include(c => c.Skills)
+                                    .SingleOrDefault(c => c.Id == id);
+        if (candidate == null)
+        {
+            throw new CandidateNotFoundException(id);
+        }
+
+        return candidate;
     }
 
     public ICollection<Candidate> GetCompleteCandidates()
     {
-        return _context.Candidates
+        return Context.Candidates
             .Include(c => c.AppliedPositions)
             .ThenInclude(op => op.Position)
             .Include(c => c.Skills)
@@ -32,52 +39,70 @@ public class CandidateService : EntityService<Candidate>, ICandidateService
     public void AddPositionToAppliedPositions(Candidate candidate, Position position)
     {
         var candidatePosition = new CandidatePosition(position);
-        _context.Add(position);
-        candidate.AppliedPositions.Add(candidatePosition);
-        _context.SaveChanges();
+        Context.Add(position);
+        candidate.AppliedPositions!.Add(candidatePosition);
+        Context.SaveChanges();
     }
 
     public void RemovePositionFromCandidateById(int candidateId, int positionId)
     {
-        var candidate = _context.Candidates.SingleOrDefault(c => c.Id == candidateId);
-        var candidatePosition = candidate.AppliedPositions.SingleOrDefault(cp => cp.Position.Id == positionId);
+        var candidate = Context.Candidates.SingleOrDefault(c => c.Id == candidateId);
+        
+        if (candidate == null)
+        {
+            throw new CandidateNotFoundException(candidateId);
+        }
+        
+        var candidatePosition = (candidate.AppliedPositions ?? throw new ApliedPositionNotAvaibleException(positionId))
+            .SingleOrDefault(cp => cp.Position.Id == positionId);
 
-        _context.CandidatePositions.Remove(candidatePosition);
+        if (candidatePosition == null)
+        {
+            throw new ApliedPositionNotAvaibleException(positionId);
+        }
 
-        _context.SaveChanges();
+        Context.CandidatePositions.Remove(candidatePosition);
+
+        Context.SaveChanges();
     }
 
     public void AddPositionToAppliedPositionsById(int candidateId, int positionId)
     {
-        Position position = _context.Positions.SingleOrDefault(p => p.Id == positionId);
-        CandidatePosition candidatePosition = new CandidatePosition(position);
-        Candidate candidate = _context.Candidates.SingleOrDefault(c => c.Id == candidateId);
+        var candidate = Context.Candidates.SingleOrDefault(c => c.Id == candidateId);
+        
+        if (candidate == null)
+        {
+            throw new CandidateNotFoundException(candidateId);
+        }
+        
+        var position = Context.Positions.SingleOrDefault(p => p.Id == positionId);
+        
+        if (position == null)
+        {
+            throw new PositionNotFoundException(positionId);
+        }
+        
+        var candidatePosition = new CandidatePosition(position);
 
-        candidate.AppliedPositions.Add(candidatePosition);
-        _context.SaveChanges();
+        candidate.AppliedPositions!.Add(candidatePosition);
+        Context.SaveChanges();
     }
 
     public ICollection<Company> GetCompanies(int id)
     {
-        var position = _context.Candidates
-            .Include(c=>c.AppliedPositions)
-            .ThenInclude(cp=>cp.Position)
-            .SingleOrDefault(c => c.Id == id);
-        var apliedPositions = position.AppliedPositions;
+        var candidate = GetCompleteCandidateById(id);
         
-        var positionIds=apliedPositions.Select(ap=>ap.Position.Id);
+        var positionIds=candidate.AppliedPositions.Select(ap=>ap.Position.Id);
         
-        var companiesPositions = _context.CompanyPositions
+        var companiesPositions = Context.CompanyPositions
             .Where(c => positionIds.Contains(c.Position.Id))
             .Select(cp=>cp.Id);
         
-        var companies = _context.Companies
+        var companies = Context.Companies
             .Include(c=>c.OpenPositions)
             .ThenInclude(cp=>cp.Position)
             .Where(c => c.OpenPositions.Any(op => companiesPositions.Contains(op.Id)));
 
-        var test = true;
-        
         return companies.ToList();
     }
 }

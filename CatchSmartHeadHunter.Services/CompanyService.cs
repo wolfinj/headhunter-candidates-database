@@ -1,3 +1,4 @@
+using CatchSmartHeadHunter.Core.Exceptions;
 using CatchSmartHeadHunter.Core.Models;
 using CatchSmartHeadHunter.Core.Services;
 using CatchSmartHeadHunter.Data;
@@ -13,15 +14,22 @@ public class CompanyService : EntityService<Company>, ICompanyService
 
     public Company GetCompleteCompanyById(int id)
     {
-        return _context.Companies
+        var company = Context.Companies
             .Include(c => c.OpenPositions)
             .ThenInclude(op => op.Position)
             .SingleOrDefault(c => c.Id == id);
+
+        if (company == null)
+        {
+            throw new CompanyNotFoundException(id);
+        }
+
+        return company;
     }
 
     public ICollection<Company> GetCompleteCompanies()
     {
-        return _context.Companies
+        return Context.Companies
             .Include(c => c.OpenPositions)
             .ThenInclude(op => op.Position)
             .ToList();
@@ -29,41 +37,54 @@ public class CompanyService : EntityService<Company>, ICompanyService
 
     public void AddPositionToOpenPositions(Company company, Position position)
     {
+        // ToDo Validate request data...
+
         var companyPosition = new CompanyPosition(position);
-        _context.Add(position);
+        Context.Add(position);
         company.OpenPositions.Add(companyPosition);
-        _context.SaveChanges();
+        Context.SaveChanges();
     }
 
-    public void RemovePositionFromCompanyById(int companyId,int positionID)
+    public void RemovePositionFromCompanyById(int companyId, int positionId)
     {
-        var company = _context.Companies.SingleOrDefault(c => c.Id == companyId);
-        var companyPosition = company.OpenPositions.SingleOrDefault(cp => cp.Position.Id == positionID);
+        var company = GetCompleteCompanyById(companyId);
 
-        _context.CompanyPositions.Remove(companyPosition);
-        
-        _context.SaveChanges();
+        var companyPosition = company.OpenPositions.SingleOrDefault(cp => cp.Position.Id == positionId);
+
+        if (companyPosition == null)
+        {
+            throw new OpenPositionNotAvaibleException(positionId);
+        }
+
+        Context.CompanyPositions.Remove(companyPosition);
+
+        Context.SaveChanges();
     }
 
-    public void AddPositionToOpenPositionsById(int companyId,int positionID)
+    public void AddPositionToOpenPositionsById(int companyId, int positionId)
     {
-        Position position = _context.Positions.SingleOrDefault(p => p.Id == positionID);
-        CompanyPosition companyPosition = new CompanyPosition(position);
-        Company company = _context.Companies.SingleOrDefault(c => c.Id == companyId);
+        var company = GetCompleteCompanyById(companyId);
+
+        var position = Context.Positions.SingleOrDefault(p => p.Id == positionId);
+
+        if (position == null)
+        {
+            throw new PositionNotFoundException(positionId);
+        }
+
+        var companyPosition = new CompanyPosition(position);
 
         company.OpenPositions.Add(companyPosition);
-        _context.SaveChanges();
+        Context.SaveChanges();
     }
 
     public ICollection<Position> GetCompanyPositions(int id)
     {
-        var positions = _context.Companies
-            .Include(c => c.OpenPositions)
-            .ThenInclude(op => op.Position)
-            .SingleOrDefault(c => c.Id == id)
-            .OpenPositions
-            .Select(op => op.Position);
         
+        var positions = GetCompleteCompanyById(id)
+            .OpenPositions!
+            .Select(op => op.Position);
+
         return positions.ToList();
     }
 }
