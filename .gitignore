@@ -4,7 +4,7 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 .idea/*
-
+.idea/.idea.CatchSmartHeadHunter/.idea/misc.xml
 
 # Created by https://www.toptal.com/developers/gitignore/api/rider,vs,csharp
 # Edit at https://www.toptal.com/developers/gitignore?templates=rider,vs,csharp
