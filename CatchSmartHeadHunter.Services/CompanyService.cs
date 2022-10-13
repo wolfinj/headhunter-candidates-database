@@ -37,8 +37,6 @@ public class CompanyService : EntityService<Company>, ICompanyService
 
     public void AddPositionToOpenPositions(Company company, Position position)
     {
-        // ToDo Validate request data...
-
         var companyPosition = new CompanyPosition(position);
         Context.Add(position);
         company.OpenPositions.Add(companyPosition);

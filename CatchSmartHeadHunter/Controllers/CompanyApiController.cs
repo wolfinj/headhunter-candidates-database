@@ -4,6 +4,7 @@ using CatchSmartHeadHunter.Core.Services;
 using CatchSmartHeadHunter.Helpers;
 using CatchSmartHeadHunter.RequestModels;
 using Microsoft.AspNetCore.Mvc;
+using static CatchSmartHeadHunter.Validations.RequestDataValidations;
 
 namespace CatchSmartHeadHunter.Controllers;
 
@@ -12,10 +13,12 @@ namespace CatchSmartHeadHunter.Controllers;
 public class CompanyApiController : ControllerBase
 {
     private readonly ICompanyService _companyService;
+    private readonly IEntityService<Position> _positionService;
 
-    public CompanyApiController(ICompanyService companyService)
+    public CompanyApiController(ICompanyService companyService, IEntityService<Position> positionService)
     {
         _companyService = companyService;
+        _positionService = positionService;
     }
 
     [HttpGet, Route("companies")]
@@ -26,17 +29,27 @@ public class CompanyApiController : ControllerBase
         return Ok(companies.ToCompanyRequestList());
     }
 
-    [HttpPost, Route("company")]
-    public IActionResult PostCompany(CompanyRequest company)
+    [HttpPost, Route("companyRequest")]
+    public IActionResult PostCompany(CompanyRequest companyRequest)
     {
-        // Todo Validate request data
-        var newCompany = company.ToCompany();
+        if (!IsCompanyRequestDataValid(companyRequest))
+        {
+            return Conflict("Company name and e-mail can't be empty or null.");
+        }
+
+        if (DoesCompanyAlreadyExist(_companyService.GetCompleteCompanies(),companyRequest))
+        {
+            return Conflict("Company already exists");
+        }
+        
+        var newCompany = companyRequest.ToCompany();
         _companyService.Create(newCompany);
 
-        return Created("Company added.", newCompany.ToCompanyRequest());
+        var uri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}{Request.Path}/{newCompany.Id}";
+        return Created(uri, newCompany.ToCompanyRequest());
     }
 
-    [HttpGet, Route("company/{id:int}")]
+    [HttpGet, Route("companyRequest/{id:int}")]
     public IActionResult GetCompany(int id)
     {
         Company company;
@@ -52,7 +65,7 @@ public class CompanyApiController : ControllerBase
         return Ok(company.ToCompanyRequest());
     }
 
-    [HttpDelete, Route("company/{id:int}")]
+    [HttpDelete, Route("companyRequest/{id:int}")]
     public IActionResult DeleteCompany(int id)
     {
         try
@@ -72,9 +85,19 @@ public class CompanyApiController : ControllerBase
         return Ok($"Company with id:{id} deleted.");
     }
 
-    [HttpPut, Route("company/{id:int}/add-positionRequest")]
+    [HttpPut, Route("companyRequest/{id:int}/add-positionRequest")]
     public IActionResult AddPositionToCompany(int id, PositionRequest positionRequest)
     {
+        if (!IsPositionRequestDataValid(positionRequest))
+        {
+            return Conflict("Position name can't be empty or null.");
+        }
+
+        if (DoesPositionAlreadyExist(_positionService.GetAll(), positionRequest))
+        {
+            return Conflict("Position already exists.");
+        }
+        
         Company company;
 
         try
@@ -94,7 +117,7 @@ public class CompanyApiController : ControllerBase
         return Ok(company);
     }
 
-    [HttpPut, Route("company/{companyId:int}/add-positionRequest-id/{positionId:int}")]
+    [HttpPut, Route("companyRequest/{companyId:int}/add-positionRequest-id/{positionId:int}")]
     public IActionResult AddPositionToCompanyById(int companyId, int positionId)
     {
         Company company;
@@ -120,7 +143,7 @@ public class CompanyApiController : ControllerBase
         return Ok(company);
     }
 
-    [HttpDelete, Route("company/{companyId:int}/remove-positionRequest/{positionId:int}")]
+    [HttpDelete, Route("companyRequest/{companyId:int}/remove-positionRequest/{positionId:int}")]
     public IActionResult RemovePositionFromCompany(int companyId, int positionId)
     {
         Company company;
@@ -145,7 +168,7 @@ public class CompanyApiController : ControllerBase
         return Ok(company);
     }
 
-    [HttpGet, Route("company/{id:int}/positions")]
+    [HttpGet, Route("companyRequest/{id:int}/positions")]
     public IActionResult GetCompanyPositions(int id)
     {
         ICollection<Position> companyOpenPositions;

@@ -4,6 +4,7 @@ using CatchSmartHeadHunter.Core.Services;
 using CatchSmartHeadHunter.Helpers;
 using CatchSmartHeadHunter.RequestModels;
 using Microsoft.AspNetCore.Mvc;
+using static CatchSmartHeadHunter.Validations.RequestDataValidations;
 
 namespace CatchSmartHeadHunter.Controllers;
 
@@ -29,13 +30,22 @@ public class CandidateApiController : ControllerBase
     [HttpPost, Route("candidate")]
     public IActionResult PostCandidate(CandidateRequest candidateRequest)
     {
-        // ToDo validate request data
+        if (!IsCandidateRequestDataValid(candidateRequest))
+        {
+            return Conflict("Candidate name and e-mail can't be empty or null.");
+        }
+
+        if (DoesCandidateAlreadyExist(_candidateService.GetCompleteCandidates(), candidateRequest))
+        {
+            return Conflict("Candidate already exists");
+        }
+
         var candidate = candidateRequest.ToCandidate();
-        
+
         _candidateService.Create(candidate);
-        
+
         var uri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}{Request.Path}/{candidate.Id}";
-        
+
         return Created(uri, candidate.ToCandidateRequest());
     }
 
@@ -74,7 +84,7 @@ public class CandidateApiController : ControllerBase
             return Problem(e.Message);
         }
 
-        return Ok($"Candidate with id:{id} deleted.");
+        return Ok($"Candidate with id:\"{id}\" deleted.");
     }
 
     [HttpPut, Route("candidate/{candidateId:int}/add-position-id/{positionId:int}")]

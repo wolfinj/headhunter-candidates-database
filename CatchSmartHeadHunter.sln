@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatchSmartHeadHunter.Core",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatchSmartHeadHunter.Services", "CatchSmartHeadHunter.Services\CatchSmartHeadHunter.Services.csproj", "{3C9B8DB3-CA84-41A7-ACEB-FB24595846DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatchSmartHeadHunter.Tests", "CatchSmartHeadHunter.Tests\CatchSmartHeadHunter.Tests.csproj", "{49BD24D4-53F8-4F9A-A077-7FA38B2CD572}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{3C9B8DB3-CA84-41A7-ACEB-FB24595846DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C9B8DB3-CA84-41A7-ACEB-FB24595846DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C9B8DB3-CA84-41A7-ACEB-FB24595846DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49BD24D4-53F8-4F9A-A077-7FA38B2CD572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49BD24D4-53F8-4F9A-A077-7FA38B2CD572}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49BD24D4-53F8-4F9A-A077-7FA38B2CD572}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49BD24D4-53F8-4F9A-A077-7FA38B2CD572}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -11,9 +11,6 @@ public static class RequestConverterExtensions
     {
         var config = new MapperConfiguration(cfg =>
         {
-            // cfg.CreateMap<Candidate, CandidateRequestResponse>()
-            //     .ForMember(dest => dest.Skills,
-            //         opt => opt.MapFrom(scr => scr.Skills.Select(s => s.SkillName)));
             cfg.CreateMap<CandidateRequest, Candidate>()
                 .ForMember(dest => dest.Skills,
                     opt => opt.MapFrom(scr => scr.Skills.Select(s => new Skill(s))))

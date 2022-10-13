@@ -4,6 +4,7 @@ using CatchSmartHeadHunter.Core.Services;
 using CatchSmartHeadHunter.Helpers;
 using CatchSmartHeadHunter.RequestModels;
 using Microsoft.AspNetCore.Mvc;
+using static CatchSmartHeadHunter.Validations.RequestDataValidations;
 
 namespace CatchSmartHeadHunter.Controllers;
 
@@ -29,7 +30,15 @@ public class PositionApiController : ControllerBase
     [HttpPost, Route("position")]
     public IActionResult PostPosition(PositionRequest positionRequest)
     {
-        // ToDo Validate request data
+        if (!IsPositionRequestDataValid(positionRequest))
+        {
+            return Conflict("Position name can't be empty or null.");
+        }
+
+        if (DoesPositionAlreadyExist(_positionService.GetAll(), positionRequest))
+        {
+            return Conflict("Position already exists.");
+        }
 
         var position = positionRequest.ToPosition();
         try
@@ -41,7 +50,8 @@ public class PositionApiController : ControllerBase
             return Problem(e.Message);
         }
 
-        return Created("Position added.", position.ToPositionRequest());
+        var uri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}{Request.Path}/{position.Id}";
+        return Created(uri, position.ToPositionRequest());
     }
 
     [HttpGet, Route("position/{id:int}")]
@@ -50,9 +60,9 @@ public class PositionApiController : ControllerBase
         try
         {
             var position = _positionService.GetById(id);
-            return position == null ? 
-                NotFound($"Position with id:\"{id}\" not found.") : 
-                Ok(position.ToPositionRequest());
+            return position == null
+                ? NotFound($"Position with id:\"{id}\" not found.")
+                : Ok(position.ToPositionRequest());
         }
         catch (Exception e)
         {
