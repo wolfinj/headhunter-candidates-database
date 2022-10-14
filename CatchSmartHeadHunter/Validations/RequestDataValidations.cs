@@ -6,6 +6,7 @@ namespace CatchSmartHeadHunter.Validations;
 public static class RequestDataValidations
 {
     // ======================================== Position ========================================
+    #region Position
 
     public static bool IsPositionRequestDataValid(PositionRequest positionRequest)
     {
@@ -31,8 +32,10 @@ public static class RequestDataValidations
 
         return false;
     }
+    #endregion
 
     // ======================================== Candidate ========================================
+    #region Candidate
 
     public static bool IsCandidateRequestDataValid(CandidateRequest candidateRequest)
     {
@@ -64,8 +67,10 @@ public static class RequestDataValidations
 
         return false;
     }
+    #endregion
 
     // ======================================== Company ========================================
+    #region Company
 
     public static bool IsCompanyRequestDataValid(CompanyRequest companyRequest)
     {
@@ -96,4 +101,6 @@ public static class RequestDataValidations
 
         return false;
     }
+    #endregion
+
 }
