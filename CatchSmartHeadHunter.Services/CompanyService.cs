@@ -19,12 +19,7 @@ public class CompanyService : EntityService<Company>, ICompanyService
             .ThenInclude(op => op.Position)
             .SingleOrDefault(c => c.Id == id);
 
-        if (company == null)
-        {
-            throw new CompanyNotFoundException(id);
-        }
-
-        return company;
+        return company ?? throw new CompanyNotFoundException(id);
     }
 
     public ICollection<Company> GetCompleteCompanies()
@@ -78,8 +73,8 @@ public class CompanyService : EntityService<Company>, ICompanyService
 
     public ICollection<Position> GetCompanyPositions(int id)
     {
-        var positions = GetCompleteCompanyById(id)
-            .OpenPositions!
+        var positions = Query().Where(c=>c.Id==id)
+            .SelectMany(c=>c.OpenPositions)
             .Select(op => op.Position);
 
         return positions.ToList();

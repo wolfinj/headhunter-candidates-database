@@ -5,7 +5,6 @@ namespace CatchSmartHeadHunter.Validations;
 
 public static class RequestDataValidations
 {
-    // ======================================== Position ========================================
     #region Position
 
     public static bool IsPositionRequestDataValid(PositionRequest positionRequest)
@@ -25,7 +24,6 @@ public static class RequestDataValidations
 
     #endregion
 
-    // ======================================== Candidate ========================================
     #region Candidate
 
     public static bool IsCandidateRequestDataValid(CandidateRequest candidateRequest)
@@ -51,7 +49,6 @@ public static class RequestDataValidations
 
     #endregion
 
-    // ======================================== Company ========================================
     #region Company
 
     public static bool IsCompanyRequestDataValid(CompanyRequest companyRequest)
@@ -72,7 +69,6 @@ public static class RequestDataValidations
     public static bool DoesCompanyAlreadyExist(ICollection<Company> companyList, CompanyRequest currentCompany)
     {
         return companyList.Any(company => IsCompanySame(company, currentCompany));
-
     }
 
     #endregion

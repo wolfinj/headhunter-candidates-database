@@ -19,13 +19,8 @@ public class CandidateService : EntityService<Candidate>, ICandidateService
             .ThenInclude(op => op.Position)
             .Include(c => c.Skills)
             .SingleOrDefault(c => c.Id == id);
-        
-        if (candidate == null)
-        {
-            throw new CandidateNotFoundException(id);
-        }
 
-        return candidate;
+        return candidate ?? throw new CandidateNotFoundException(id);
     }
 
     public ICollection<Candidate> GetCompleteCandidates()
@@ -91,9 +86,8 @@ public class CandidateService : EntityService<Candidate>, ICandidateService
 
     public ICollection<Company> GetCompanies(int id)
     {
-        var candidate = GetCompleteCandidateById(id);
-
-        var positionIds = candidate.AppliedPositions.Select(ap => ap.Position.Id);
+        var positionIds = Context.Candidates.Where(c => c.Id == id)
+            .SelectMany(c => c.AppliedPositions.Select(cp => cp.Position.Id));
 
         var companiesPositions = Context.CompanyPositions
             .Where(c => positionIds.Contains(c.Position.Id))
