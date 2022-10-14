@@ -20,18 +20,9 @@ public static class RequestDataValidations
 
     public static bool DoesPositionAlreadyExist(ICollection<Position> positionList, PositionRequest currentPosition)
     {
-        foreach (var position in positionList)
-        {
-            var isPositionSame = IsPositionSame(position, currentPosition);
-
-            if (isPositionSame)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return positionList.Any(position => IsPositionSame(position, currentPosition));
     }
+
     #endregion
 
     // ======================================== Candidate ========================================
@@ -55,18 +46,9 @@ public static class RequestDataValidations
     public static bool DoesCandidateAlreadyExist(ICollection<Candidate> candidateList,
         CandidateRequest currentCandidate)
     {
-        foreach (var candidate in candidateList)
-        {
-            var isCandidateSame = IsCandidateSame(candidate, currentCandidate);
-
-            if (isCandidateSame)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return candidateList.Any(candidate => IsCandidateSame(candidate, currentCandidate));
     }
+
     #endregion
 
     // ======================================== Company ========================================
@@ -79,28 +61,19 @@ public static class RequestDataValidations
 
     private static bool IsCompanySame(Company currentCompany, CompanyRequest expectedCompanyRequest)
     {
-        return string.Equals(currentCompany.Name.Trim(), 
+        return string.Equals(currentCompany.Name.Trim(),
                    expectedCompanyRequest.Name.Trim(),
                    StringComparison.OrdinalIgnoreCase) &&
-               string.Equals(currentCompany.Email.Trim(), 
+               string.Equals(currentCompany.Email.Trim(),
                    expectedCompanyRequest.Email.Trim(),
                    StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool DoesCompanyAlreadyExist(ICollection<Company> companyList, CompanyRequest currentCompany)
     {
-        foreach (var company in companyList)
-        {
-            var isCompanySame = IsCompanySame(company, currentCompany);
+        return companyList.Any(company => IsCompanySame(company, currentCompany));
 
-            if (isCompanySame)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
-    #endregion
 
+    #endregion
 }
